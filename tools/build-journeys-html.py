@@ -1,6 +1,6 @@
 """Builds output/journeys.html from the screenshots in output/shots.
 Run tools/capture-journeys.js first, then this script, then tools/render-pdf.js."""
-import os, html, glob
+import os, html, glob, pathlib
 from PIL import Image
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 OUT = os.path.join(ROOT, 'output')
@@ -14,7 +14,7 @@ for f in glob.glob(os.path.join(OUT, 'shots', '*.png')):
     im.save(os.path.join(JPG, os.path.basename(f)[:-4] + '.jpg'), quality=82, optimize=True)
 FONTCSS = ''  # fonts come from Google Fonts (see <link> in the output HTML)
 
-def img(n): return f"file://{JPG}/{n}.jpg"
+def img(n): return pathlib.Path(JPG, n + ".jpg").as_uri()
 E = html.escape
 
 JOURNEYS = [
@@ -269,5 +269,5 @@ figcaption p{margin:1mm 0 0;color:#4d4060;font-size:9.5pt}
 .phones img{width:100%;border-radius:4mm;border:1px solid #e6dfee;display:block}
 .phones figcaption{font-size:9pt;font-weight:600;justify-content:center}
 '''
-open(os.path.join(OUT,'journeys.html'),'w').write(f'<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Barlow+Condensed:ital,wght@0,600;0,700;1,600;1,700&family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"><title>Telesôl & Boafo – Screens and User Journeys</title><style>{CSS}</style></head><body>{"".join(pages)}</body></html>')
+open(os.path.join(OUT,'journeys.html'),'w',encoding='utf-8').write(f'<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Barlow+Condensed:ital,wght@0,600;0,700;1,600;1,700&family=Work+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"><title>Telesôl & Boafo – Screens and User Journeys</title><style>{CSS}</style></head><body>{"".join(pages)}</body></html>')
 print(len(pages),'pages')

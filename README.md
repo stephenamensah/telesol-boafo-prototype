@@ -25,6 +25,15 @@ telesol-prototype/
 └── package.json
 ```
 
+## Live prototype
+
+Deployed with GitHub Pages from `main`:
+
+- Website: https://stephenamensah.github.io/telesol-boafo-prototype/website/
+- Mobile app: https://stephenamensah.github.io/telesol-boafo-prototype/mobile-app/
+
+A push to `main` redeploys it.
+
 ## Run the prototypes
 
 Open `website/index.html` or `mobile-app/index.html` in a browser. To serve them locally instead, run:
@@ -47,6 +56,8 @@ pip install pillow pypdf
 npm run journeys   # → output/Telesol-Boafo-Screens-and-User-Journeys.pdf (39 pages)
 npm run pages      # → output/Telesol-Boafo-Prototype-Screens.pdf (13 full-length pages)
 ```
+
+To capture the deployed site instead of the local files, set `BASE_URL` first, for example `BASE_URL=https://stephenamensah.github.io/telesol-boafo-prototype/website/ npm run journeys`.
 
 `npm run journeys` runs three steps: it captures the screenshots, builds the journey HTML, and renders the PDF. Run the journeys again after any change to the website, so the screenshots match it.
 
