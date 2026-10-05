@@ -1,0 +1,17 @@
+{
+  "name": "telesol-boafo-prototype",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telesôl & Boafo website prototype, Telesôl mobile app prototype, and the tooling that produces the user-journey screenshots and PDFs.",
+  "scripts": {
+    "serve": "npx --yes serve .",
+    "shots": "node tools/capture-journeys.js",
+    "journeys:html": "python3 tools/build-journeys-html.py",
+    "journeys:pdf": "node tools/render-pdf.js",
+    "journeys": "npm run shots && npm run journeys:html && npm run journeys:pdf",
+    "pages": "node tools/capture-pages-pdf.js && python3 tools/merge-pages.py"
+  },
+  "devDependencies": {
+    "playwright": "^1.47.0"
+  }
+}

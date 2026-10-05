@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Telesôl App Prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Barlow+Condensed:ital,wght@0,700;1,700&family=Work+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a single phone frame centred on a plum stage; screens swap inside it. Single committed brand look. */
+:root{
+  color-scheme:light;
+  --plum:#5f1843;--plum-deep:#3f0f33;--gold:#eeab25;--pink:#e3529c;--pink-soft:#fbe3ef;
+  --blue:#2878c0;--green:#3d7d55;--green-soft:#e4f1e8;--ink:#1d1330;--muted:#6b5d78;--line:#ece6f2;--card:#ffffff;--bg:#f6f2f7;
+  --ok:#2e8b57;--warn:#b86e00;
+  --fd:"Unbounded","Arial Black",system-ui,sans-serif;--fc:"Barlow Condensed","Arial Narrow",sans-serif;--fb:"Work Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(circle at 20% 10%,#7a2458,var(--plum-deep) 60%);font-family:var(--fb);color:var(--ink);padding-inline:16px;padding-block:24px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:100%}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.stage-head{color:#f3dcea;text-align:center;display:grid;gap:4px;max-width:420px}
+.stage-head b{font-family:var(--fd);font-size:15px;color:#fff}
+.stage-head span{font-size:12.5px;opacity:.85}
+.phone{width:min(390px,100%);height:min(812px,calc(100vh - 150px));min-height:620px;background:#000;border-radius:48px;padding:10px;box-shadow:0 30px 70px rgba(0,0,0,.45)}
+.screen{position:relative;width:100%;height:100%;border-radius:38px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column}
+.status{height:40px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font-size:13px;font-weight:600;z-index:3}
+.status.light{color:#fff}
+.view{position:absolute;inset:0;display:flex;flex-direction:column;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.view{animation:none}}
+.body{flex:1;overflow-y:auto;padding:4px 20px 24px;display:flex;flex-direction:column;gap:16px}
+.body::-webkit-scrollbar{display:none}
+.topbar{display:flex;align-items:center;gap:12px;padding:6px 16px 10px}
+.back{width:38px;height:38px;border-radius:50%;border:0;background:#fff;box-shadow:0 1px 0 var(--line);display:grid;place-items:center}
+.topbar h2{font-family:var(--fd);font-size:17px;margin:0}
+h1,h2,h3{margin:0}
+.btn{border:0;border-radius:999px;padding:15px 20px;font-family:var(--fd);font-weight:600;font-size:13px;width:100%;transition:transform .12s}
+.btn:active{transform:scale(.98)}
+.btn.gold{background:var(--gold);color:var(--plum-deep)}
+.btn.plum{background:var(--plum);color:#fff}
+.btn.green{background:var(--green);color:#fff}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--plum);color:var(--plum)}
+.btn[disabled]{opacity:.55}
+.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 1px 0 var(--line),0 8px 20px rgba(63,15,51,.06)}
+.lab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:4px 9px;border-radius:99px}
+.field{display:grid;gap:6px}
+.field label{font-size:13px;font-weight:600}
+.field input,.field select{font:inherit;font-size:16px;padding:14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;width:100%}
+.field input:focus{outline:none;border-color:var(--plum)}
+.err{color:#c0324d;font-size:12.5px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;font-variant-numeric:tabular-nums}
+.kv:last-child{border:0}
+.muted{color:var(--muted);font-size:13.5px}
+/* tab bar */
+.tabbar{flex:none;display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border-top:1px solid var(--line);padding:8px 6px 22px}
+.tabbar button{background:none;border:0;display:grid;justify-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--muted);padding:4px 0}
+.tabbar button.on{color:var(--plum)}
+.tabbar svg{width:22px;height:22px}
+/* splash */
+.splash{background:var(--plum);color:#fff;justify-content:center;align-items:center;text-align:center;gap:14px;padding:30px}
+.splash .word{font-family:var(--fd);font-weight:700;font-size:44px}
+.splash p{opacity:.9;max-width:26ch}
+.splash .shape{position:absolute;border-radius:50%;opacity:.9}
+/* home */
+.hello{background:linear-gradient(160deg,var(--plum),var(--plum-deep));color:#fff;padding:0 20px 70px;border-radius:0 0 30px 30px}
+.hello small{opacity:.8}
+.hello h1{font-family:var(--fd);font-size:22px;margin-top:4px}
+.plan-card{margin:-58px 20px 0;position:relative}
+.plan-card h3{font-family:var(--fd);font-size:20px;color:var(--plum)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat{background:var(--bg);border-radius:14px;padding:10px;display:grid;gap:2px}
+.stat b{font-family:var(--fd);font-size:14px;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;color:var(--muted)}
+.alert{display:flex;gap:10px;align-items:center;background:#fff4e0;color:#6d4300;border-radius:16px;padding:12px 14px;font-size:13.5px;border:0;text-align:left;width:100%}
+.alert b{margin-left:auto;white-space:nowrap}
+.qa{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.qa button{background:#fff;border:0;border-radius:18px;padding:14px 6px;display:grid;justify-items:center;gap:8px;font-size:12px;font-weight:600;box-shadow:0 1px 0 var(--line)}
+.qa i{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-style:normal;color:#fff}
+.qa svg{width:20px;height:20px}
+.meter{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--plum),var(--pink))}
+/* plans */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border-radius:999px;padding:4px;gap:4px;box-shadow:0 1px 0 var(--line)}
+.seg button{border:0;background:none;border-radius:999px;padding:10px;font-family:var(--fd);font-size:11.5px;font-weight:600}
+.seg button.on{background:var(--plum);color:#fff}
+.plan{border-radius:20px;padding:18px;color:#fff;display:grid;gap:8px;position:relative}
+.plan h3{font-family:var(--fd);font-size:17px}
+.plan .pr{font-family:var(--fd);font-size:22px;font-weight:700}
+.plan .pr small{font-family:var(--fb);font-size:12px;font-weight:500;opacity:.9}
+.plan .cur{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.25);font-size:11px;font-weight:600;padding:4px 9px;border-radius:99px}
+.plan .pop{position:absolute;top:14px;right:14px;background:var(--gold);color:var(--plum-deep);font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:99px}
+.plan ul{margin:0;padding-left:18px;font-size:13px;opacity:.95}
+.plan .btn{background:#fff;color:var(--ink);padding:12px}
+/* pay */
+.opt{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:14px;border:1.5px solid var(--line);font-weight:500}
+.opt:has(input:checked){border-color:var(--plum);background:#fbf4f8}
+.opt input{accent-color:var(--plum)}
+.opt .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:10px;font-weight:800;color:#fff}
+.amount{font-family:var(--fd);font-size:34px;font-weight:700;color:var(--plum);font-variant-numeric:tabular-nums}
+.done{align-items:center;text-align:center;justify-content:center;gap:14px}
+.tick{width:84px;height:84px;border-radius:50%;background:var(--ok);display:grid;place-items:center}
+/* otp */
+.otp{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.otp input{text-align:center;font-family:var(--fd);font-size:20px;padding:14px 0;border-radius:14px;border:1.5px solid var(--line);width:100%}
+.otp input:focus{outline:none;border-color:var(--plum)}
+/* speed */
+.gauge{display:grid;place-items:center;position:relative}
+.gauge .v{position:absolute;text-align:center}
+.gauge .v b{font-family:var(--fd);font-size:32px;color:var(--plum);font-variant-numeric:tabular-nums;display:block}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+/* list rows */
+.row{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:14px;border:0;width:100%;text-align:left;box-shadow:0 1px 0 var(--line)}
+.row i{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;font-style:normal}
+.row div{flex:1;min-width:0}
+.row small{display:block;color:var(--muted);font-size:12.5px}
+.row .chev{color:var(--muted)}
+/* boafo */
+.boafo-top{background:var(--green);color:#fff;padding:0 20px 24px;border-radius:0 0 28px 28px;position:relative;overflow:hidden}
+.boafo-top h1{font-family:var(--fd);font-size:24px}
+.boafo-top::after{content:"";position:absolute;right:-40px;top:-30px;width:170px;height:170px;border-radius:50%;background:var(--pink);opacity:.85}
+.boafo-top::before{content:"";position:absolute;right:50px;top:-60px;width:120px;height:120px;border-radius:50%;background:var(--gold);opacity:.9}
+.boafo-top>*{position:relative;z-index:1}
+.packs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pk{background:#fff;border:2px solid transparent;border-radius:18px;padding:14px;display:grid;gap:4px;text-align:left}
+.pk.on{border-color:var(--green)}
+.pk b{font-family:var(--fd);font-size:18px;color:var(--green)}
+.pk span{font-weight:600}
+.code{font-family:var(--fd);font-size:26px;letter-spacing:.12em;color:var(--green);text-align:center}
+.toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;transition:.2s;pointer-events:none;z-index:9;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:720px}
+.flow button{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:99px;padding:6px 11px;font-size:12px}
+.flow button.on{background:var(--gold);color:var(--plum-deep);font-weight:600}
+</style>
+</head>
+<body>
+<div class="stage-head"><b>Telesôl mobile app</b><span>Clickable prototype. Tap through the phone, or jump to any screen below. Speeds shown are indicative. Business Dedicated is quoted by sales, so it is not in the app.</span></div>
+
+<div class="phone"><div class="screen" id="screen">
+  <div class="toast" id="toast" role="status"></div>
+</div></div>
+
+<nav class="flow" id="flow" aria-label="Jump to screen"></nav>
+
+<script>
+(function(){
+const scr=document.getElementById('screen');
+const S={name:'Kwame',plan:'h-ess',pending:null,paid:false,phone:'024 555 0199',boafoPack:'h1',tickets:[{id:'TK-58210',t:'Slow speed',s:'In progress'}]};
+const PLANS={home:[{id:'h-ess',n:'Essentials',sp:20,p:120,f:['Unlimited data','1–4 devices']},{id:'h-fam',n:'Family',sp:50,p:160,f:['Unlimited data','5–8 devices'],pop:1},{id:'h-max',n:'Max',sp:100,p:275,f:['Unlimited data','8–12 devices']},{id:'h-fmx',n:'Family Max',sp:200,p:480,f:['Unlimited data','12–20 devices, mesh Wi-Fi']},{id:'h-smt',n:'Smart Home',sp:500,p:1255,f:['Unlimited data','20+ devices incl. smart devices']}],
+ biz:[{id:'b-ess',n:'Business Essential',sp:30,p:365,f:['Up to 10 staff','Next-day fault response']},{id:'b-con',n:'Business Connect',sp:60,p:680,f:['10–25 staff','Static IP'],pop:1},{id:'b-sig',n:'Business Signature',sp:150,p:1275,f:['25–50 staff','4-hour fault response']},{id:'b-inf',n:'Business Infinity',sp:300,p:2325,f:['50–100 staff','2-hour fault response']}]};
+const ALL=[...PLANS.home,...PLANS.biz];
+const BOAFO=[{id:'q30',d:'30 mins',p:1},{id:'h1',d:'1 hour',p:2},{id:'day',d:'24 hours',p:5},{id:'wk',d:'7 days',p:25}];
+const cur=()=>ALL.find(p=>p.id===S.plan);
+const ghs=n=>'GHS '+n.toLocaleString('en-GH');
+const I={
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>',
+ plans:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M2 9a14.5 14.5 0 0120 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/></svg>',
+ pay:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>',
+ support:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg>',
+ profile:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>',
+ cov:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+ up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
+ speed:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18a8 8 0 1116 0"/><path d="M12 14l4-5"/></svg>',
+ wifi:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a14.5 14.5 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0"/><circle cx="12" cy="19" r="1.2" fill="currentColor"/></svg>',
+ back:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 5l-7 7 7 7"/></svg>'
+};
+const status=(light)=>`<div class="status ${light?'light':''}"><span>9:41</span><span>●●● 5G ▮</span></div>`;
+const top=(t,b='home')=>`${status()}<div class="topbar"><button class="back" data-go="${b}" aria-label="Back">${I.back}</button><h2>${t}</h2></div>`;
+const tabs=a=>`<nav class="tabbar">${[['home','Home'],['plans','Plans'],['pay','Pay'],['support','Support'],['profile','Profile']].map(([k,l])=>`<button data-go="${k}" class="${a===k?'on':''}">${I[k]}${l}</button>`).join('')}</nav>`;
+
+const V={
+ splash:()=>`<div class="view splash"><span class="shape" style="width:220px;height:220px;background:var(--gold);top:-60px;right:-70px"></span><span class="shape" style="width:160px;height:160px;background:var(--pink);bottom:-40px;left:-50px"></span>
+   <div class="word">Telesôl</div><p>Competitive plans, dependable speed and support.</p>
+   <button class="btn gold" style="max-width:240px;margin-top:20px" data-go="signin">Get started</button></div>`,
+ signin:()=>`<div class="view">${status()}<div class="body" style="padding-top:30px">
+   <div style="font-family:var(--fd);font-weight:700;font-size:26px;color:var(--plum)">Telesôl</div>
+   <h1 style="font-family:var(--fd);font-size:24px">Welcome</h1><p class="muted">Sign in with the phone number on your Telesôl account. We'll text you a code.</p>
+   <form id="fSign" class="card" style="display:grid;gap:14px" novalidate><div class="field"><label for="ph">Phone number</label><input id="ph" inputmode="tel" value="${S.phone}"><span class="err" id="phE"></span></div>
+   <button class="btn plum" type="submit">Send code</button></form>
+   <p class="muted" style="text-align:center">New to Telesôl? <a href="#" data-go="plans" style="color:var(--plum);font-weight:600">Explore packages</a></p></div></div>`,
+ otp:()=>`<div class="view">${top('Verify your number','signin')}<div class="body">
+   <p class="muted">Enter the 6-digit code sent to <b>${S.phone}</b>. Any 6 digits work in this prototype.</p>
+   <form id="fOtp" style="display:grid;gap:16px" novalidate><div class="otp">${[0,1,2,3,4,5].map(i=>`<input inputmode="numeric" maxlength="1" aria-label="Digit ${i+1}" data-otp="${i}">`).join('')}</div><span class="err" id="otpE"></span>
+   <button class="btn plum" type="submit">Verify</button></form><p class="muted" style="text-align:center" id="resend">Resend code in 0:30</p></div></div>`,
+ home:()=>{const p=cur();return `<div class="view"><div class="hello">${status(1)}<small>Good morning,</small><h1>${S.name} Mensah</h1></div>
+   <div class="card plan-card"><div style="display:flex;justify-content:space-between;align-items:center"><span class="tag" style="background:var(--pink-soft);color:var(--plum)">Active plan</span><span class="tag" style="background:#e7f5ec;color:#16502f">● Online</span></div>
+    <h3 style="margin-top:10px">${p.n}</h3><div class="stats"><div class="stat"><b>${p.sp} Mbps</b><span>Speed</span></div><div class="stat"><b>${ghs(p.p)}</b><span>Monthly</span></div><div class="stat"><b>∞</b><span>Data</span></div></div>
+    <div class="kv" style="border:0;padding-bottom:0"><span class="muted">Renews</span><b>${S.paid?'in 42 days':'in 12 days'}</b></div><div class="meter"><i style="width:${S.paid?5:60}%"></i></div></div>
+   <div class="body" style="padding-top:16px">
+    ${S.paid?'':`<button class="alert" data-go="pay">⚠️ <span>Bill due 12 Oct</span><b>Pay now →</b></button>`}
+    ${S.pending?`<div class="alert" style="background:#e7f5ec;color:#16502f">✓ <span>Upgrade to ${ALL.find(x=>x.id===S.pending).n} confirmed</span></div>`:''}
+    <div class="lab">Quick actions</div>
+    <div class="qa">
+     <button data-go="pay"><i style="background:var(--plum)">${I.pay}</i>Pay bill</button>
+     <button data-go="coverage"><i style="background:var(--gold);color:var(--plum-deep)">${I.cov}</i>Coverage</button>
+     <button data-go="plans"><i style="background:var(--pink)">${I.up}</i>Upgrade</button>
+     <button data-go="support"><i style="background:var(--blue)">${I.support}</i>Support</button>
+     <button data-go="speed"><i style="background:#7a2458">${I.speed}</i>Speed test</button>
+     <button data-go="boafo"><i style="background:var(--green)">${I.wifi}</i>Boafo</button>
+    </div>
+    <div class="card"><div class="lab">Average speed today</div><div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><b style="font-family:var(--fd);font-size:26px;color:var(--plum)">${(p.sp*0.93).toFixed(1)}</b><span class="muted">Mbps of ${p.sp}</span></div></div>
+   </div>${tabs('home')}</div>`},
+ plans:(seg='home')=>`<div class="view">${status()}<div class="topbar"><h2 style="padding-left:4px">Packages</h2></div><div class="body">
+   <div class="seg"><button data-seg="home" class="${seg==='home'?'on':''}">Home</button><button data-seg="biz" class="${seg==='biz'?'on':''}">Business</button><button data-go="boafo">Boafo</button></div>
+   ${PLANS[seg].map(p=>`<div class="plan" style="background:${seg==='home'?'var(--pink)':'var(--blue)'}">${p.id===S.plan?'<span class="cur">Current plan</span>':p.pop?'<span class="pop">MOST POPULAR</span>':''}
+     <h3>${p.n}</h3><div>Up to ${p.sp} Mbps</div><div class="pr">${ghs(p.p)} <small>/ month</small></div><ul>${p.f.map(x=>`<li>${x}</li>`).join('')}</ul>
+     ${p.id===S.plan?'':`<button class="btn" data-pick="${p.id}">Select</button>`}</div>`).join('')}
+   </div>${tabs('plans')}</div>`,
+ upgrade:()=>{const a=cur(),b=ALL.find(x=>x.id===S.pick);const d=b.p-a.p;return `<div class="view">${top(d>=0?'Confirm upgrade':'Confirm change','plans')}<div class="body">
+   <div class="card"><div class="kv"><span class="muted">From</span><b>${a.n} · ${a.sp} Mbps</b></div><div class="kv"><span class="muted">To</span><b style="color:var(--plum)">${b.n} · ${b.sp} Mbps</b></div>
+   <div class="kv"><span class="muted">New monthly price</span><b>${ghs(b.p)}</b></div><div class="kv"><span class="muted">Difference</span><b>${d>=0?'+':''}${ghs(d)} / month</b></div></div>
+   <p class="muted">${d>=0?'Your new speed starts within 10 minutes. The difference is added to your next bill.':'Your change applies at your next renewal date.'}</p>
+   <button class="btn plum" data-confirm>Confirm ${d>=0?'upgrade':'change'}</button><button class="btn ghost" data-go="plans">Cancel</button></div></div>`},
+ pay:()=>{const p=cur();return `<div class="view">${status()}<div class="topbar"><h2 style="padding-left:4px">Pay bill</h2></div><div class="body">
+   ${S.paid?`<div class="card done" style="display:grid;justify-items:center;gap:8px"><b style="font-family:var(--fd)">You're all paid up</b><span class="muted">Next bill on 23 Nov</span></div>`:`
+   <div class="card" style="text-align:center"><div class="lab">Amount due · 12 Oct</div><div class="amount">${ghs(p.p)}.00</div><span class="muted">${p.n} · 13 Oct – 12 Nov</span></div>
+   <div class="lab">Pay with</div>
+   <form id="fPay" style="display:grid;gap:10px" novalidate>
+   ${[['MTN MoMo','#f2c200','MTN'],['Telecel Cash','#e30613','TC'],['AT Money','#0a4ea2','AT'],['Visa / Mastercard','#1d1330','CARD']].map((m,i)=>`<label class="opt"><input type="radio" name="m" value="${m[0]}" ${i===0?'checked':''}><span class="logo" style="background:${m[1]};${i===0?'color:#1d1330':''}">${m[2]}</span>${m[0]}</label>`).join('')}
+   <div class="field"><label for="mm" id="mmL">MoMo number</label><input id="mm" inputmode="tel" value="${S.phone}"><span class="err" id="mmE"></span></div>
+   <button class="btn gold" type="submit" id="payB">Pay ${ghs(p.p)}</button></form>`}
+   </div>${tabs('pay')}</div>`},
+ paid:()=>`<div class="view done" style="padding:30px">${''}<div class="tick"><svg width="44" height="44" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg></div>
+   <h1 style="font-family:var(--fd);font-size:24px;color:var(--plum)">Payment successful</h1><p class="muted">${ghs(cur().p)}.00 paid with ${S.method}. Receipt sent by SMS.</p>
+   <div class="card" style="width:100%"><div class="kv"><span class="muted">Reference</span><b>${S.ref}</b></div><div class="kv"><span class="muted">Plan</span><b>${cur().n}</b></div><div class="kv"><span class="muted">Next renewal</span><b>12 Nov 2026</b></div></div>
+   <button class="btn plum" data-go="home">Done</button></div>`,
+ speed:()=>`<div class="view">${top('Speed test')}<div class="body">
+   <div class="gauge card"><svg width="250" height="170" viewBox="0 0 250 170"><path d="M25 150a100 100 0 01200 0" fill="none" stroke="#ece6f2" stroke-width="18" stroke-linecap="round"/><path id="arc" d="M25 150a100 100 0 01200 0" fill="none" stroke="url(#g)" stroke-width="18" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"/><defs><linearGradient id="g"><stop offset="0" stop-color="#5f1843"/><stop offset="1" stop-color="#e3529c"/></linearGradient></defs></svg>
+    <div class="v" style="top:118px"><b id="sv">0.0</b><span class="muted">Mbps download</span></div></div>
+   <div class="trio"><div class="stat card" style="padding:12px"><span>Upload</span><b id="su">–</b></div><div class="stat card" style="padding:12px"><span>Ping</span><b id="sp">–</b></div><div class="stat card" style="padding:12px"><span>Plan</span><b>${cur().sp} Mbps</b></div></div>
+   <button class="btn plum" id="runS">Run test</button></div></div>`,
+ coverage:()=>`<div class="view">${top('Coverage')}<div class="body">
+   <form id="fCov" style="display:grid;gap:10px" novalidate><div class="field"><label for="ca">Area or landmark</label><input id="ca" value="East Legon"></div><button class="btn plum" type="submit">Check</button></form>
+   <div id="covR"></div>
+   <div class="lab">Nearby areas</div>
+   ${[['Adenta','Connected'],['Madina','Connected'],['Spintex','Connected'],['Kasoa','Coming soon'],['Dodowa','Coming soon']].map(a=>`<div class="row"><i style="background:${a[1]==='Connected'?'#e7f5ec':'#fff4e0'}">${I.cov}</i><div><b>${a[0]}</b><small>${a[1]==='Connected'?'Fibre and wireless available':'Network extension underway'}</small></div></div>`).join('')}
+   </div></div>`,
+ support:()=>`<div class="view">${status()}<div class="topbar"><h2 style="padding-left:4px">Support</h2></div><div class="body">
+   <h1 style="font-family:var(--fd);font-size:20px">How can we help?</h1>
+   ${[['chat','Chat with us','Replies in about 2 minutes','var(--plum)'],['outage','Report an outage','No internet or lights off on router','#c0324d'],['billing','Billing question','Payments, receipts, renewals','var(--gold)'],['faq','FAQs','Installation, data, upgrades','var(--blue)']].map(r=>`<button class="row" data-sup="${r[0]}"><i style="background:${r[3]};color:#fff">${I.support}</i><div><b>${r[1]}</b><small>${r[2]}</small></div><span class="chev">›</span></button>`).join('')}
+   <div class="lab">Your tickets</div>
+   ${S.tickets.map(t=>`<div class="row"><i style="background:var(--pink-soft);color:var(--plum)">#</i><div><b>${t.id} · ${t.t}</b><small>${t.s}</small></div><span class="tag" style="background:${t.s==='Open'?'#fff4e0':'#e8effa'};color:${t.s==='Open'?'#6d4300':'#1e4d8f'}">${t.s}</span></div>`).join('')}
+   </div>${tabs('support')}</div>`,
+ outage:()=>`<div class="view">${top('Report an outage','support')}<div class="body">
+   <form id="fOut" class="card" style="display:grid;gap:14px" novalidate>
+    <div class="field"><label for="ot">What's happening?</label><select id="ot"><option>No internet at all</option><option>Very slow speed</option><option>Connection keeps dropping</option></select></div>
+    <div class="field"><label for="ol">Router lights</label><select id="ol"><option>All lights off</option><option>Red light on</option><option>Lights normal</option></select></div>
+    <button class="btn plum" type="submit">Submit report</button></form><p class="muted">We'll check your line remotely first. If a visit is needed, we'll call you.</p></div></div>`,
+ boafo:()=>`<div class="view"><div class="boafo-top">${status(1)}<small style="opacity:.9">Community based Wi-Fi</small><h1>Boafo</h1><p style="margin-top:6px;font-size:14px;opacity:.9">Buy a code, join “Boafo Wi-Fi” at any hotspot.</p></div>
+   <div class="body" style="padding-top:16px"><div class="lab">Choose a pack</div>
+   <div class="packs">${BOAFO.map(p=>`<button class="pk ${S.boafoPack===p.id?'on':''}" data-pk="${p.id}"><b>${p.d}</b><span>${ghs(p.p)}</span></button>`).join('')}</div>
+   <div id="bOut"></div>
+   <button class="btn green" id="buyB">Buy code · ${ghs(BOAFO.find(p=>p.id===S.boafoPack).p)}</button>
+   <button class="btn ghost" style="box-shadow:inset 0 0 0 1.5px var(--green);color:var(--green)" data-go="home">Back to Telesôl</button></div></div>`,
+ profile:()=>`<div class="view">${status()}<div class="topbar"><h2 style="padding-left:4px">Profile</h2></div><div class="body">
+   <div class="card" style="display:flex;gap:14px;align-items:center"><span style="width:56px;height:56px;border-radius:50%;background:var(--plum);color:#fff;display:grid;place-items:center;font-family:var(--fd)">KM</span><div><b style="font-family:var(--fd)">${S.name} Mensah</b><div class="muted">Account TS-104233</div></div></div>
+   <div class="card"><div class="kv"><span class="muted">Phone</span><b>${S.phone}</b></div><div class="kv"><span class="muted">Address</span><b>GA-183-8164, East Legon</b></div><div class="kv"><span class="muted">Plan</span><b>${cur().n}</b></div></div>
+   <div class="card"><label class="kv" style="cursor:pointer"><span>Bill reminders</span><input type="checkbox" checked></label><label class="kv" style="cursor:pointer"><span>Outage alerts</span><input type="checkbox" checked></label><label class="kv" style="cursor:pointer"><span>Offers</span><input type="checkbox"></label></div>
+   <button class="btn ghost" data-logout>Log out</button></div>${tabs('profile')}</div>`
+};
+let now='splash',seg='home';
+function show(v,arg){now=v;scr.querySelectorAll('.view').forEach(e=>e.remove());scr.insertAdjacentHTML('afterbegin',V[v](arg));bind(v);renderFlow()}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2200)}
+const phoneOk=v=>/^(\+?233|0)\d{9}$/.test(v.replace(/[\s-]/g,''));
+scr.addEventListener('click',e=>{
+ const g=e.target.closest('[data-go]');if(g){e.preventDefault();show(g.dataset.go,g.dataset.go==='plans'?seg:undefined);return}
+ const sg=e.target.closest('[data-seg]');if(sg){seg=sg.dataset.seg;show('plans',seg);return}
+ const pk=e.target.closest('[data-pick]');if(pk){S.pick=pk.dataset.pick;show('upgrade');return}
+ if(e.target.closest('[data-confirm]')){S.plan=S.pick;S.pending=S.pick;toast('Plan updated');show('home');return}
+ const su=e.target.closest('[data-sup]');if(su){const k=su.dataset.sup;if(k==='outage')show('outage');else toast(k==='chat'?'Chat opens here in the live app':k==='billing'?'Billing chat opens here':'FAQs open here');return}
+ const b=e.target.closest('[data-pk]');if(b){S.boafoPack=b.dataset.pk;show('boafo');return}
+ if(e.target.closest('[data-logout]')){S.paid=false;S.pending=null;show('splash');return}
+});
+function bind(v){
+ const q=s=>scr.querySelector(s);
+ if(v==='signin')q('#fSign').onsubmit=e=>{e.preventDefault();const val=q('#ph').value;if(!phoneOk(val)){q('#phE').textContent='Enter a Ghana number, e.g. 024 123 4567.';return}S.phone=val;show('otp')};
+ if(v==='otp'){const ins=[...scr.querySelectorAll('[data-otp]')];ins[0].focus();
+  ins.forEach((inp,i)=>{inp.oninput=()=>{inp.value=inp.value.replace(/\D/g,'');if(inp.value&&ins[i+1])ins[i+1].focus()};inp.onkeydown=e=>{if(e.key==='Backspace'&&!inp.value&&ins[i-1])ins[i-1].focus()}});
+  let s=30;const iv=setInterval(()=>{const r=q('#resend');if(!r){clearInterval(iv);return}s--;r.textContent=s>0?`Resend code in 0:${String(s).padStart(2,'0')}`:'Resend code';if(s<=0)clearInterval(iv)},1000);
+  q('#fOtp').onsubmit=e=>{e.preventDefault();if(ins.some(x=>!x.value)){q('#otpE').textContent='Enter all 6 digits.';return}toast('Signed in');show('home')}}
+ if(v==='pay'&&!S.paid){scr.querySelectorAll('input[name=m]').forEach(r=>r.onchange=()=>{const c=r.value.startsWith('Visa');q('#mmL').textContent=c?'Card number':r.value+' number';q('#mm').value=c?'':S.phone;q('#mm').placeholder=c?'4111 1111 1111 1111':''});
+  q('#fPay').onsubmit=e=>{e.preventDefault();const m=scr.querySelector('input[name=m]:checked').value,val=q('#mm').value.replace(/\s/g,'');
+   if(m.startsWith('Visa')?!/^\d{16}$/.test(val):!phoneOk(val)){q('#mmE').textContent=m.startsWith('Visa')?'Enter the 16-digit card number.':'Enter the number to charge.';return}
+   const b=q('#payB');b.disabled=true;b.textContent=m.startsWith('Visa')?'Processing…':'Approve the prompt on your phone…';
+   setTimeout(()=>{S.paid=true;S.method=m;S.ref='TS-PAY-'+Math.floor(10000+Math.random()*89999);show('paid')},1500)}}
+ if(v==='speed')q('#runS').onclick=()=>{const b=q('#runS');b.disabled=true;b.textContent='Testing…';const max=cur().sp;let i=0;const fin=(max*(0.86+Math.random()*0.1));
+  const iv=setInterval(()=>{i++;const val=Math.min(fin,fin*i/18+Math.random()*2);q('#sv').textContent=val.toFixed(1);q('#arc').setAttribute('stroke-dashoffset',314-314*Math.min(val/max,1));
+   if(i>=20){clearInterval(iv);q('#sv').textContent=fin.toFixed(1);q('#su').textContent=(fin*0.33).toFixed(1);q('#sp').textContent='14 ms';b.disabled=false;b.textContent='Run again'}},90)};
+ if(v==='coverage'){const run=()=>{const a=q('#ca').value.trim();const ok=/legon|adenta|madina|spintex|tema|osu|achimota|dansoman/i.test(a),soon=/kasoa|dodowa|kumasi|tamale/i.test(a);
+  q('#covR').innerHTML=`<div class="card" style="background:${ok?'#e7f5ec':soon?'#fff4e0':'#fde8ec'}"><b style="font-family:var(--fd);font-size:14px">${ok?'Connected':soon?'Coming soon':'Not yet available'}: ${a||'—'}</b><p class="muted" style="margin-top:4px">${ok?'Fibre available. You can move your connection here.':soon?'We will notify you when it goes live.':'Try Boafo community Wi-Fi hotspots nearby.'}</p></div>`};
+  q('#fCov').onsubmit=e=>{e.preventDefault();run()};run()}
+ if(v==='outage')q('#fOut').onsubmit=e=>{e.preventDefault();const id='TK-'+Math.floor(10000+Math.random()*89999);S.tickets.unshift({id,t:q('#ot').value,s:'Open'});toast('Report '+id+' submitted');show('support')};
+ if(v==='boafo')q('#buyB').onclick=()=>{const b=q('#buyB');b.disabled=true;b.textContent='Approve on your phone…';setTimeout(()=>{const c='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<8;i++){s+=c[Math.floor(Math.random()*c.length)];if(i===3)s+='-'}
+  const p=BOAFO.find(x=>x.id===S.boafoPack);q('#bOut').innerHTML=`<div class="card" style="display:grid;gap:8px;text-align:center"><span class="tag" style="background:var(--green-soft);color:var(--green);justify-self:center">${p.d} code</span><div class="code">${s}</div><span class="muted">Join “Boafo Wi-Fi” and enter this code. Also sent by SMS.</span></div>`;
+  b.disabled=false;b.textContent='Buy another code'},1300)};
+}
+const FLOW=[['splash','Splash'],['signin','Sign in'],['otp','Verify code'],['home','Home'],['plans','Plans'],['pay','Pay bill'],['speed','Speed test'],['coverage','Coverage'],['support','Support'],['outage','Report outage'],['boafo','Boafo'],['profile','Profile']];
+function renderFlow(){document.getElementById('flow').innerHTML=FLOW.map(([k,l])=>`<button data-j="${k}" class="${now===k?'on':''}">${l}</button>`).join('')}
+document.getElementById('flow').addEventListener('click',e=>{const b=e.target.closest('[data-j]');if(b)show(b.dataset.j,b.dataset.j==='plans'?seg:undefined)});
+show('splash');
+})();
+</script>
+
+</body>
+</html>
